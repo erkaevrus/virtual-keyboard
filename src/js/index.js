@@ -182,7 +182,13 @@ const Keyboard = {
     },
 
     _toggleCapsLock() {
+        this.properties.capsLock = !this.properties.capsLock
 
+        for (const key of this.elements.keys) {
+            if (key.childElementCount === 0 && key.textContent.length === 1) {
+                key.textContent = this.properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
+            }
+        }
     },
 
     open(initialValue, oninput, onclose) {
