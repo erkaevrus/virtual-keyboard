@@ -161,7 +161,12 @@ const Keyboard = {
                 keyElement.classList.add("keyboard__key", "keyboard__key--small")
                 keyElement.innerText = "▲"
                 keyElement.style.width = "90%"
+                keyElement.addEventListener("click", () => {
+                    this.properties.value += "▲"
+                    this._triggerEvent("oninput")
+                })
                 arrowContainer.appendChild(keyElement)
+
 
                 //создаем кнопку стрелку вверх
                 keyElement = document.createElement("button")
@@ -169,6 +174,10 @@ const Keyboard = {
                 keyElement.classList.add("keyboard__key", "keyboard__key--small")
                 keyElement.innerText = "▼"
                 keyElement.style.width = "90%"
+                keyElement.addEventListener("click", () => {
+                    this.properties.value += "▼"
+                    this._triggerEvent("oninput")
+                })
                 arrowContainer.appendChild(keyElement)
 
                 //добавляем во фрагмент элемент-котейнер для стрелок
