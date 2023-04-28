@@ -49,7 +49,7 @@ const Keyboard = {
             "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\", "Del",
             "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter",
             "Done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift",
-            "Ctrl", "Win", "Alt", "Space", "Alt", "◀", "up-down", "▶", "Ctrl",
+            "Ctrl", "Win", "Alt", "Space", "Alt", "Ctrl", "◀", "up-down", "▶"
         ]
 
         //Создание HTML для иконок
