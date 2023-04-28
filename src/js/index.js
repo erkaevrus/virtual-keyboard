@@ -43,7 +43,138 @@ const Keyboard = {
     },
 
     _createKeys() {
+        const fragment = document.createDocumentFragment()
+        const keyLayout = [
+            "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace",
+            "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\", "Del",
+            "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter",
+            "Done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift",
+            "Ctrl", "Win", "Alt", "Space", "Alt", "◀", "up-down", "▶", "Ctrl",
+        ]
 
+        //Создание HTML для иконок
+        const createIconHTML = (iconName) => {
+            return `<span class="icon icon--${iconName}"></span>`
+        }
+
+        keyLayout.forEach(key => {
+
+
+            const keyElement = document.createElement("button")
+            const insertLineBreak = ["Backspace", "Del", "Enter", "Shift"].indexOf(key) !== -1
+
+
+            keyElement.setAttribute("type", "button")
+            keyElement.classList.add("keyboard__key")
+
+            switch (key) {
+                case "Backspace":
+                    keyElement.classList.add("keyboard__key--wide")
+                    keyElement.innerHTML = createIconHTML("backspace")
+
+                    keyElement.addEventListener("click", () => {
+                        this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
+                        this._triggerEvent("oninput")
+                    })
+
+                    break
+
+                case "CapsLock":
+                    keyElement.classList.add("keyboard__key--wide", "keyboard__key--activatable")
+                    keyElement.innerHTML = createIconHTML("capslk")
+
+                    keyElement.addEventListener("click", () => {
+                        this._toggleCapsLock()
+                        keyElement.classList.toggle("keyboard__key--active")
+                    })
+
+                    break
+
+                case "Enter":
+                    keyElement.classList.add("keyboard__key--wide")
+                    keyElement.innerHTML = createIconHTML("enter")
+
+                    keyElement.addEventListener("click", () => {
+                        this.properties.value += "\n"
+                        this._triggerEvent("oninput")
+                    })
+
+                    break
+
+                case "Space":
+                    keyElement.classList.add("keyboard__key--extra-wide")
+                    keyElement.innerHTML = createIconHTML("space")
+
+                    keyElement.addEventListener("click", () => {
+                        this.properties.value += " "
+                        this._triggerEvent("oninput")
+                    })
+
+                    break
+
+                case "Done":
+                    keyElement.classList.add("keyboard__key--wide", "keyboard__key--dark")
+                    keyElement.innerHTML = createIconHTML("done")
+
+                    keyElement.addEventListener("click", () => {
+                        this.close()
+                        this._triggerEvent("oninput")
+                    })
+
+                    break
+
+                case "Shift":
+                    keyElement.classList.add("keyboard__key--wide")
+                    keyElement.textContent = key
+
+                    break
+
+                default:
+                    keyElement.textContent = key
+
+                    keyElement.addEventListener("click", () => {
+                        this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase()
+                        this._triggerEvent("oninput")
+                    })
+
+                    break
+            }
+
+            if (key === "up-down") {
+
+                //создаем элемент-контейнер для стрелок
+                const arrowContainer = document.createElement("div")
+                arrowContainer.classList.add("arrow-container")
+
+                //создаем кнопку стрелку вниз
+                let keyElement = document.createElement("button")
+                keyElement.setAttribute("type", "button")
+                keyElement.classList.add("keyboard__key", "keyboard__key--small")
+                keyElement.innerText = "▲"
+                keyElement.style.width = "90%"
+                arrowContainer.appendChild(keyElement)
+
+                //создаем кнопку стрелку вверх
+                keyElement = document.createElement("button")
+                keyElement.setAttribute("type", "button")
+                keyElement.classList.add("keyboard__key", "keyboard__key--small")
+                keyElement.innerText = "▼"
+                keyElement.style.width = "90%"
+                arrowContainer.appendChild(keyElement)
+
+                //добавляем во фрагмент элемент-котейнер для стрелок
+                fragment.appendChild(arrowContainer)
+            }
+
+            if (key !== "up-down") {
+                fragment.appendChild(keyElement)
+            }
+
+            if (insertLineBreak) {
+                fragment.appendChild(document.createElement("br"))
+            }
+        })
+        return fragment
     },
 
     _triggerEvent(handlerName) {
