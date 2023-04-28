@@ -40,6 +40,15 @@ const Keyboard = {
          document.body.appendChild(this.elements.title)
          document.body.appendChild(this.elements.textarea)
          document.body.appendChild(this.elements.main)
+
+         //Подключаем ввод на textarea
+         document.querySelectorAll(".entry-field ").forEach(element => {
+            element.addEventListener("focus", () => {
+                this.open(element.value, currentValue => {
+                    element.value = currentValue
+                })
+            })
+         })
     },
 
     _createKeys() {
@@ -201,7 +210,7 @@ const Keyboard = {
     },
 
     close() {
-        this.value = ""
+        this.properties.value = ""
         this.eventHandlers.oninput = oninput
         this.eventHandlers.onclose = onclose
         this.elements.main.classList.add("keyboard--hidden")
@@ -211,9 +220,4 @@ const Keyboard = {
 
 window.addEventListener("DOMContentLoaded", function () {
     Keyboard.init()
-    Keyboard.open("dcode", function (currentValue) {
-        console.log("value changed! here it is: " + currentValue)
-    }, function (currentValue) {
-        console.log("keyboard closed! Finishing value " + currentValue)
-    })
 })
