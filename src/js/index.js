@@ -138,6 +138,15 @@ const Keyboard = {
 
                     break
 
+                case "Tab":
+                    keyElement.textContent = key
+                    keyElement.addEventListener("click", () => {
+                        this.properties.value += "    "
+                        this._triggerEvent("oninput")
+                    })
+
+                    break
+
                 default:
                     keyElement.textContent = key
 
