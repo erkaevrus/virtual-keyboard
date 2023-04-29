@@ -1,3 +1,6 @@
+import keyboardKeys from "./data.js";
+
+
 const Keyboard = {
     elements: {
         title: null,
@@ -7,14 +10,9 @@ const Keyboard = {
         keys: []
     },
 
-    eventHandlers: {
-        oninput: null,
-        onclose: null
-    },
-
     properties: {
-        value: "",
         capsLock: false,
+        lang: "en"
     },
 
     init() {
@@ -29,7 +27,7 @@ const Keyboard = {
          this.elements.title.textContent = "Virtual Keyboard"
          this.elements.textarea.classList.add("entry-field")
 
-         this.elements.main.classList.add("keyboard", "keyboard--hidden")
+         this.elements.main.classList.add("keyboard")
          this.elements.keysContainer.classList.add("keyboard__keys")
          this.elements.keysContainer.appendChild(this._createKeys())
 
@@ -41,40 +39,51 @@ const Keyboard = {
          document.body.appendChild(this.elements.textarea)
          document.body.appendChild(this.elements.main)
 
-         //Подключаем ввод на textarea
-         document.querySelectorAll(".entry-field ").forEach(element => {
-            element.addEventListener("focus", () => {
-                this.open(element.value, currentValue => {
-                    element.value = currentValue
-                })
-            })
-         })
     },
 
     _createKeys() {
         const fragment = document.createDocumentFragment()
-        const keyLayout = [
-            "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace",
-            "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\", "Del",
-            "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter",
-            "Done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift",
-            "Ctrl", "Win", "Alt", "Space", "Alt", "Ctrl", "◀", "up-down", "▶"
-        ]
+        const keyLayout = keyboardKeys
+        // [
+        //     "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace",
+        //     "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\", "Del",
+        //     "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter",
+        //     "Done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift",
+        //     "Ctrl", "Win", "Alt", "Space", "Alt", "Ctrl", "◀", "up-down", "▶"
+        // ]
+
+
+        //Эффект нажатия с физической клавиатуры на виртуальной
+        document.addEventListener('keydown', function(event) {
+            let key = document.querySelector(`[data-keycode='${event.code}']`)
+            key.classList.add("keyboard__key--opacity")
+        })
+
+        document.addEventListener('keyup', function(event) {
+            let key = document.querySelector(`[data-keycode='${event.code}']`)
+            key.classList.remove("keyboard__key--opacity")
+        })
+
 
         //Создание HTML для иконок
         const createIconHTML = (iconName) => {
             return `<span class="icon icon--${iconName}"></span>`
         }
+        //Контейнер для стрелок up-down
+        const arrowContainer = document.createElement("div")
+        arrowContainer.classList.add("arrow-container")
 
-        keyLayout.forEach(key => {
+        keyLayout.forEach(item => {
 
+            const key = item[this.properties.lang].text
 
             const keyElement = document.createElement("button")
-            const insertLineBreak = ["Backspace", "Del", "Enter", "Shift"].indexOf(key) !== -1
+            const insertLineBreak = ["Backspace", "Delelte", "Enter", "ShiftRight"].indexOf(item.id) !== -1
 
 
             keyElement.setAttribute("type", "button")
             keyElement.classList.add("keyboard__key")
+            keyElement.dataset.keycode = item.id //прописываем в dataset keycode клавиши
 
             switch (key) {
                 case "Backspace":
@@ -82,8 +91,8 @@ const Keyboard = {
                     keyElement.innerHTML = createIconHTML("backspace")
 
                     keyElement.addEventListener("click", () => {
-                        this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
-                        this._triggerEvent("oninput")
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value = textarea.value.slice(0, textarea.value.length - 1)
                     })
 
                     break
@@ -104,8 +113,8 @@ const Keyboard = {
                     keyElement.innerHTML = createIconHTML("enter")
 
                     keyElement.addEventListener("click", () => {
-                        this.properties.value += "\n"
-                        this._triggerEvent("oninput")
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value += "\n"
                     })
 
                     break
@@ -115,19 +124,8 @@ const Keyboard = {
                     keyElement.innerHTML = createIconHTML("space")
 
                     keyElement.addEventListener("click", () => {
-                        this.properties.value += " "
-                        this._triggerEvent("oninput")
-                    })
-
-                    break
-
-                case "Done":
-                    keyElement.classList.add("keyboard__key--wide", "keyboard__key--dark")
-                    keyElement.innerHTML = createIconHTML("done")
-
-                    keyElement.addEventListener("click", () => {
-                        this.close()
-                        this._triggerEvent("oninput")
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value += " "
                     })
 
                     break
@@ -141,59 +139,71 @@ const Keyboard = {
                 case "Tab":
                     keyElement.textContent = key
                     keyElement.addEventListener("click", () => {
-                        this.properties.value += "    "
-                        this._triggerEvent("oninput")
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value += "    "
                     })
 
+                    break
+
+                case "Del":
+                    keyElement.textContent = key
+                    keyElement.addEventListener("click", () => {
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value = textarea.value.slice(0, textarea.value.length - 1)
+                    })
+
+                    break
+
+                case "Ctrl":
+                    keyElement.textContent = key
+                    break
+
+                case "Win":
+                    keyElement.textContent = key
+                    break
+
+                case "Alt":
+                    keyElement.textContent = key
+                    break
+
+                case "▲":
+                    keyElement.classList.add("keyboard__key--small")
+                    keyElement.textContent = key
+                    keyElement.style.width = "90%"
+                    keyElement.addEventListener("click", () => {
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value += "▲"
+                    })
+
+                    arrowContainer.appendChild(keyElement)
+                    break
+
+                case "▼":
+                    keyElement.classList.add("keyboard__key--small")
+
+                    keyElement.textContent = key
+                    keyElement.style.width = "90%"
+                    keyElement.addEventListener("click", () => {
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value += "▼"
+                    })
+
+                    arrowContainer.appendChild(keyElement)
+                    fragment.appendChild(arrowContainer)
                     break
 
                 default:
                     keyElement.textContent = key
 
                     keyElement.addEventListener("click", () => {
-                        this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase()
-                        this._triggerEvent("oninput")
+                        let textarea = document.querySelector(".entry-field ")
+                        textarea.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase()
                     })
 
                     break
             }
 
-            if (key === "up-down") {
-
-                //создаем элемент-контейнер для стрелок
-                const arrowContainer = document.createElement("div")
-                arrowContainer.classList.add("arrow-container")
-
-                //создаем кнопку стрелку вниз
-                let keyElement = document.createElement("button")
-                keyElement.setAttribute("type", "button")
-                keyElement.classList.add("keyboard__key", "keyboard__key--small")
-                keyElement.innerText = "▲"
-                keyElement.style.width = "90%"
-                keyElement.addEventListener("click", () => {
-                    this.properties.value += "▲"
-                    this._triggerEvent("oninput")
-                })
-                arrowContainer.appendChild(keyElement)
-
-
-                //создаем кнопку стрелку вверх
-                keyElement = document.createElement("button")
-                keyElement.setAttribute("type", "button")
-                keyElement.classList.add("keyboard__key", "keyboard__key--small")
-                keyElement.innerText = "▼"
-                keyElement.style.width = "90%"
-                keyElement.addEventListener("click", () => {
-                    this.properties.value += "▼"
-                    this._triggerEvent("oninput")
-                })
-                arrowContainer.appendChild(keyElement)
-
-                //добавляем во фрагмент элемент-котейнер для стрелок
-                fragment.appendChild(arrowContainer)
-            }
-
-            if (key !== "up-down") {
+            if (key !== "▲" && key !== "▼") {
                 fragment.appendChild(keyElement)
             }
 
@@ -204,12 +214,6 @@ const Keyboard = {
         return fragment
     },
 
-    _triggerEvent(handlerName) {
-        if (typeof this.eventHandlers[handlerName] == "function") {
-            this.eventHandlers[handlerName](this.properties.value)
-        }
-    },
-
     _toggleCapsLock() {
         this.properties.capsLock = !this.properties.capsLock
 
@@ -218,20 +222,6 @@ const Keyboard = {
                 key.textContent = this.properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
             }
         }
-    },
-
-    open(initialValue, oninput, onclose) {
-        this.properties.value = initialValue || ""
-        this.eventHandlers.oninput = oninput
-        this.eventHandlers.onclose = onclose
-        this.elements.main.classList.remove("keyboard--hidden")
-    },
-
-    close() {
-        this.properties.value = ""
-        this.eventHandlers.oninput = oninput
-        this.eventHandlers.onclose = onclose
-        this.elements.main.classList.add("keyboard--hidden")
     }
 }
 

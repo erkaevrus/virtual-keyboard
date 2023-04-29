@@ -81,6 +81,10 @@ body {
     opacity: 0.5;
 }
 
+.keyboard__key--opacity {
+    opacity: 0.5;
+}
+
 .keyboard__key--wide {
     width: 90px;
 }
