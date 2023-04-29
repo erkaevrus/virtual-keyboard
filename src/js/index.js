@@ -106,6 +106,13 @@ const Keyboard = {
                         keyElement.classList.toggle("keyboard__key--active")
                     })
 
+                    document.addEventListener('keydown', function(event) {
+                        if (event.code === "CapsLock") {
+                            Keyboard._toggleCapsLock()
+                            keyElement.classList.toggle("keyboard__key--active")
+                        }
+                    })
+
                     break
 
                 case "Enter":
