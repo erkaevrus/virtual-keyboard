@@ -12,6 +12,7 @@ const Keyboard = {
 
     properties: {
         capsLock: false,
+        shift: 'text',
         lang: localStorage.getItem('lang') || 'en'
     },
 
@@ -74,8 +75,7 @@ const Keyboard = {
         arrowContainer.classList.add("arrow-container")
 
         keyLayout.forEach(item => {
-
-            const key = item[this.properties.lang].text
+            const key = item[this.properties.lang][this.properties.shift]
 
             const keyElement = document.createElement("button")
             const insertLineBreak = ["Backspace", "Delelte", "Enter", "ShiftRight"].indexOf(item.id) !== -1
@@ -227,7 +227,10 @@ const Keyboard = {
     _toggleLang() {
         Keyboard.properties.lang === "ru" ? Keyboard.properties.lang = "en" : Keyboard.properties.lang = "ru"
         window.localStorage.setItem('lang', Keyboard.properties.lang)
-        console.log(localStorage.getItem('lang'))
+    },
+
+    _toggleShift() {
+        Keyboard.properties.shift === 'text' ? Keyboard.properties.shift = 'textShift' : Keyboard.properties.shift = 'text'
     }
 }
 
@@ -264,4 +267,24 @@ document.addEventListener('keydown', function(event) {
 
 })
 
-document.querySelector('.entry-field')
+
+//shift
+document.addEventListener('keydown', function(event) {
+    if (event.code === "ShiftLeft" && !event.repeat) {
+        Keyboard._toggleShift()
+        const keys = document.querySelector('.keyboard__keys')
+        keys.innerHTML = ""
+        keys.appendChild(Keyboard._createKeys())
+        Keyboard.elements.keys = Keyboard.elements.keysContainer.querySelectorAll(".keyboard__key")
+    }
+})
+
+document.addEventListener('keyup', function(event) {
+    if (event.code === "ShiftLeft") {
+        Keyboard._toggleShift()
+        const keys = document.querySelector('.keyboard__keys')
+        keys.innerHTML = ""
+        keys.appendChild(Keyboard._createKeys())
+        Keyboard.elements.keys = Keyboard.elements.keysContainer.querySelectorAll(".keyboard__key")
+    }
+})
