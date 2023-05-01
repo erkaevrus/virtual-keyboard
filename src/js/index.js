@@ -3,6 +3,7 @@ import keyboardKeys from "./data.js";
 
 const Keyboard = {
     elements: {
+        desctiption: null,
         title: null,
         textarea: null,
         main: null,
@@ -20,6 +21,7 @@ const Keyboard = {
          //Создание элементов в объекте elements
          this.elements.title = document.createElement("h1")
          this.elements.textarea = document.createElement("textarea")
+         this.elements.desctiption = document.createElement('span')
          this.elements.main = document.createElement("div")
          this.elements.keysContainer = document.createElement("div")
 
@@ -28,6 +30,12 @@ const Keyboard = {
          this.elements.title.textContent = "Virtual Keyboard"
          this.elements.textarea.classList.add("entry-field")
         this.elements.textarea.setAttribute("autofocus", "")
+        this.elements.desctiption.classList.add('desctiption')
+        this.elements.desctiption.textContent =
+            `
+            * Для переключения языка Ctrl-Shift
+            * Клавиатура для системы Windows
+            `
 
 
 
@@ -42,6 +50,7 @@ const Keyboard = {
          document.body.appendChild(this.elements.title)
          document.body.appendChild(this.elements.textarea)
          document.body.appendChild(this.elements.main)
+         document.body.appendChild(this.elements.desctiption)
     },
 
     _createKeys() {
