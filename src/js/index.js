@@ -2,20 +2,19 @@ import keyboardKeys from './data.js';
 
 
 const Keyboard = {
-    elements: {
-        desctiption: null,
-        title: null,
-        textarea: null,
-        main: null,
-        keysContainer: null,
-        keys: []
-    },
-
-    properties: {
-        capsLock: false,
-        shift: 'text',
-        lang: localStorage.getItem('lang') || 'en'
-    },
+  elements: {
+    desctiption: null,
+    title: null,
+    textarea: null,
+    main: null,
+    keysContainer: null,
+    keys: []
+  },
+  properties: {
+      capsLock: false,
+      shift: 'text',
+      lang: localStorage.getItem('lang') || 'en'
+  },
 
     init() {
         //Создание элементов в объекте elements
