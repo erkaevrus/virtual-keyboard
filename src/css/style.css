@@ -5,7 +5,6 @@
 }
 
 body {
-    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -119,9 +118,7 @@ body {
 }
 
 .desctiption {
-    position: absolute;
-    left: 0;
-    top: 390px;
+    align-self: flex-start;
     width: 230px;
     font-size: 13px;
     color: #6C757D;
