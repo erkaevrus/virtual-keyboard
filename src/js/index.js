@@ -12,7 +12,7 @@ const Keyboard = {
 
     properties: {
         capsLock: false,
-        lang: "en"
+        lang: localStorage.getItem('lang') || 'en'
     },
 
     init() {
@@ -26,6 +26,9 @@ const Keyboard = {
          this.elements.title.classList.add("title")
          this.elements.title.textContent = "Virtual Keyboard"
          this.elements.textarea.classList.add("entry-field")
+        this.elements.textarea.setAttribute("autofocus", "")
+
+
 
          this.elements.main.classList.add("keyboard")
          this.elements.keysContainer.classList.add("keyboard__keys")
@@ -38,23 +41,20 @@ const Keyboard = {
          document.body.appendChild(this.elements.title)
          document.body.appendChild(this.elements.textarea)
          document.body.appendChild(this.elements.main)
-
     },
 
     _createKeys() {
         const fragment = document.createDocumentFragment()
         const keyLayout = keyboardKeys
-        // [
-        //     "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace",
-        //     "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\", "Del",
-        //     "CapsLock", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter",
-        //     "Done", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift",
-        //     "Ctrl", "Win", "Alt", "Space", "Alt", "Ctrl", "◀", "up-down", "▶"
-        // ]
-
 
         //Эффект нажатия с физической клавиатуры на виртуальной
         document.addEventListener('keydown', function(event) {
+            const textarea = document.querySelector(".entry-field")
+
+            //Установка фокуса в конце строки на поле ввода при нажатии клавиши
+            textarea.focus()
+            textarea.selectionStart = textarea.value.length
+
             let key = document.querySelector(`[data-keycode='${event.code}']`)
             key.classList.add("keyboard__key--opacity")
         })
@@ -64,11 +64,11 @@ const Keyboard = {
             key.classList.remove("keyboard__key--opacity")
         })
 
-
         //Создание HTML для иконок
         const createIconHTML = (iconName) => {
             return `<span class="icon icon--${iconName}"></span>`
         }
+
         //Контейнер для стрелок up-down
         const arrowContainer = document.createElement("div")
         arrowContainer.classList.add("arrow-container")
@@ -83,7 +83,7 @@ const Keyboard = {
 
             keyElement.setAttribute("type", "button")
             keyElement.classList.add("keyboard__key")
-            keyElement.dataset.keycode = item.id //прописываем в dataset keycode клавиши
+            keyElement.dataset.keycode = item.id  //прописываем в dataset keycode клавиши
 
             switch (key) {
                 case "Backspace":
@@ -104,13 +104,6 @@ const Keyboard = {
                     keyElement.addEventListener("click", () => {
                         this._toggleCapsLock()
                         keyElement.classList.toggle("keyboard__key--active")
-                    })
-
-                    document.addEventListener('keydown', function(event) {
-                        if (event.code === "CapsLock") {
-                            Keyboard._toggleCapsLock()
-                            keyElement.classList.toggle("keyboard__key--active")
-                        }
                     })
 
                     break
@@ -229,6 +222,12 @@ const Keyboard = {
                 key.textContent = this.properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
             }
         }
+    },
+
+    _toggleLang() {
+        Keyboard.properties.lang === "ru" ? Keyboard.properties.lang = "en" : Keyboard.properties.lang = "ru"
+        window.localStorage.setItem('lang', Keyboard.properties.lang)
+        console.log(localStorage.getItem('lang'))
     }
 }
 
@@ -236,3 +235,33 @@ const Keyboard = {
 window.addEventListener("DOMContentLoaded", function () {
     Keyboard.init()
 })
+
+//CapsLock по нажатию физической клавиатуры
+document.addEventListener('keydown', function(event) {
+    if (event.code === "CapsLock") {
+        Keyboard._toggleCapsLock()
+        keyElement.classList.toggle("keyboard__key--active")
+    }
+})
+
+
+//Переключение языка
+let pressed = new Set()
+
+document.addEventListener('keydown', function(event) {
+    pressed.add(event.code)
+    if (Array.from(pressed).includes('ShiftLeft') && Array.from(pressed).includes('ControlLeft')) {
+        Keyboard._toggleLang()
+        const keys = document.querySelector('.keyboard__keys')
+        keys.innerHTML = ""
+        keys.appendChild(Keyboard._createKeys())
+        Keyboard.elements.keys = Keyboard.elements.keysContainer.querySelectorAll(".keyboard__key")
+    }
+
+    setTimeout(function() {
+        pressed.clear()
+    }, 1000)
+
+})
+
+document.querySelector('.entry-field')
